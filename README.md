@@ -5,8 +5,4 @@
 
 ## Video demonstration:
 
-<iframe width="560" height="315"
-src="https://www.youtube.com/watch?v=p9ct8UbgQLA" 
-frameborder="0" 
-allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
-allowfullscreen></iframe>
+[![test](https://yt-embed.herokuapp.com/embed?v=p9ct8UbgQLA)](https://www.youtube.com/watch?v=p9ct8UbgQLA "test")
