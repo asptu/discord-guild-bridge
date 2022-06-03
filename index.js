@@ -47,7 +47,6 @@ client.on("messageCreate", (message) => {
     if (message.webhookId) return;
     if (message.content.includes("@everyone" || "@here"))
       return goblinMessagesDelete.push(message);
-
     if (message.attachments.size > 0) {
         message.attachments.forEach(attachment => {
             const ImageLink = attachment.proxyURL;
@@ -70,7 +69,6 @@ client.on("messageCreate", (message) => {
     
     if (message.content == null || undefined) return;
     if (message.content == "") return;
-    
     if (message.member.nickname == null) {
       webhookClient.send({
         content: message.content,
@@ -92,12 +90,10 @@ client.on("messageCreate", (message) => {
     let idW = "982310906941812758";
     const webhookClient = new WebhookClient({ id: idW, token: tokenW });
 
-
     if (message.author.bot) return;
     if (message.webhookId) return;
     if (message.content.includes("@everyone" || "@here"))
     return spiderManMessagesDelete.push(message);
-
     if (message.attachments.size > 0) {
         message.attachments.forEach(attachment => {
             const ImageLink = attachment.proxyURL;
@@ -120,7 +116,6 @@ client.on("messageCreate", (message) => {
 
     if (message.content == null || undefined) return;
     if (message.content == "") return;
-  
     if (message.member.nickname == null) {
       webhookClient.send({
         content: message.content,
