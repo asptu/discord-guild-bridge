@@ -1,8 +1,14 @@
 # discord-guild-bridge
 
- connects 2 server channels to eachother
-
+Connects 2 discord server channels to eachother via webhooks.
 
 ## Video demonstration:
 
-[![test](https://yt-embed.herokuapp.com/embed?v=p9ct8UbgQLA)](https://www.youtube.com/watch?v=p9ct8UbgQLA "test")
+[![demonstration](https://yt-embed.herokuapp.com/embed?v=tl70quvywbE)](https://www.youtube.com/watch?v=tl70quvywbE "demonstration")
+
+
+## Requires
+
+https://nodejs.org/en/
+
+https://discord.js.org/#/
