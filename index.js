@@ -19,7 +19,7 @@ const client = new Client({
 
 client.once("ready", () => {
     console.log("Ready!");
-    
+
     client.user.setActivity('~Help');
 
   });
@@ -134,7 +134,6 @@ client.on("messageCreate", (message) => {
 
       Channel1 = message.channel.id
       Guild1 = message.guild.id
-      console.log(Channel1)
 
       message.channel.createWebhook("Webhook1")
     .then(wb => {
@@ -147,6 +146,7 @@ client.on("messageCreate", (message) => {
       
     })
     .catch(console.error);
+    console.log(`setup channel ${message.channel.id} (Channel1)`)
     message.channel.send('setup Channel1') 
 
     } else if (message.content.match('~Channel2')) {
@@ -154,7 +154,6 @@ client.on("messageCreate", (message) => {
 
         Channel2 = message.channel.id
         Guild2 = message.guild.id
-        console.log(Channel2)
 
         message.channel.createWebhook("Webhook2")
         .then(wb => {
@@ -167,6 +166,7 @@ client.on("messageCreate", (message) => {
         
         })
         .catch(console.error);
+        console.log(`setup channel ${message.channel.id} (Channel2)`)
         message.channel.send('setup Channel2')
 
     } else if (message.content.match('~Disable')) {
@@ -190,7 +190,7 @@ client.on("messageCreate", (message) => {
       const webhookClient = new WebhookClient({ url: web1Data });
 
       webhookClient.delete()
-      message.channel.send('removed Channel1')
+      message.channel.send('disconnected Channel1')
 
     } else if (message.content.match('~delChannel2')) {
 
@@ -199,7 +199,7 @@ client.on("messageCreate", (message) => {
       const webhookClient = new WebhookClient({ url: web2Data });
 
       webhookClient.delete()
-      message.channel.send('removed Channel2')
+      message.channel.send('disconnected Channel2')
 
     } else if (message.content.match('~RESET')) {
     if (message.author.id !== '346939348530495489') return
