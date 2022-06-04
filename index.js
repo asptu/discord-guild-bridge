@@ -19,8 +19,9 @@ const client = new Client({
 
 client.once("ready", () => {
     console.log("Ready!");
-
+    
     client.user.setActivity('~Help');
+
   });
 
 
@@ -203,6 +204,27 @@ client.on("messageCreate", (message) => {
     } else if (message.content.match('~RESET')) {
     if (message.author.id !== '346939348530495489') return
     client.destroy()
+
+
+    } else if (message.content.match('~Help')) {
+
+      const helpEmbed = new MessageEmbed()
+      .setColor('#0099ff')
+      .setTitle('Commands list')
+      .setThumbnail('https://cdn.discordapp.com/attachments/967452904590024715/982716254500565022/unknown.png')
+      .addFields(
+        { name: '~Help', value: 'shows this menu' },
+        { name: '~Channel1', value: 'setups first connected channel', inline: true },
+        { name: '~Channel2', value: 'setups second connected channel', inline: true },
+        { name: '~Enable', value: 'Enables the server link (enabled by default)', inline: true },
+        { name: '~Disable', value: 'disables the server link', inline: true },
+        { name: '~delChannel1', value: 'disconnects the first channel', inline: true },
+        { name: '~delChannel2', value: 'disconnects the second channel', inline: true },
+      )
+      .setTimestamp()
+      .setFooter({ text: 'Asptu#0003', iconURL: 'https://cdn.discordapp.com/avatars/982712671847735346/b6e7e5166bb0105777891a0e070c710f.webp?size=80' });
+    
+    message.channel.send({ embeds: [helpEmbed] });
 
 
     }
