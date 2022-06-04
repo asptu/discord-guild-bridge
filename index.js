@@ -1,12 +1,10 @@
-const { Client, Intents, WebhookClient } = require("discord.js");
-const { token, spiderToken, goblinToken } = require("./config.json");
+const { Client, Intents, WebhookClient, Permissions } = require("discord.js");
+const { token } = require("./config.json");
+const fs = require('fs');
 
-let spiderManMessagesDelete = [];
-let goblinMessagesDelete = [];
-
-let gTrans = "979009790695047171";
-let sTrans = "979009748055785545";
-
+var Channel1 = "979009790695047171"
+var Channel2 = "979009748055785545"
+var Enabled = false
 
 const client = new Client({
   intents: [
@@ -16,37 +14,26 @@ const client = new Client({
   ],
 });
 
+
 client.once("ready", () => {
     console.log("Ready!");
-  // client.guilds.cache.get("979009790695047168").channels.cache.get("979009790695047171").send("bridge is up");
-  // client.guilds.cache.get("979009748055785542").channels.cache.get("979009748055785545").send("bridge is up");
-  setInterval(() => {
-    if(spiderManMessagesDelete.length === 0 && goblinMessagesDelete.length === 0) return;
-    let spiderMan = client.guilds.cache.get("979009748055785542").channels.cache.get(sTrans);
-    let goblin = client.guilds.cache.get("979009790695047168").channels.cache.get(gTrans); 
-
-    spiderMan.bulkDelete(spiderManMessagesDelete);
-    goblin.bulkDelete(goblinMessagesDelete);
-
-    goblinMessagesDelete = [];
-    spiderManMessagesDelete = [];
-
-  }, 2000) 
 });
 
 
 client.on("messageCreate", (message) => {
 
-  if (message.channel.id == gTrans) {
+  if (Enabled == true) {
+  if (message.channel.id == Channel2) {
+    const web1Data = fs.readFileSync('./Web1URL.txt',
+    {encoding:'utf8', flag:'r'});
 
-    let tokenW = spiderToken;
-    let idW = "982306134763376642";
-    const webhookClient = new WebhookClient({ id: idW, token: tokenW });
+    if (web1Data == '') return message.channel.send('Web1URL is empty')
+
+    const webhookClient = new WebhookClient({ url: web1Data });
 
     if (message.author.bot) return;
     if (message.webhookId) return;
-    if (message.content.includes("@everyone" || "@here"))
-      return goblinMessagesDelete.push(message);
+    if (message.content.includes("@everyone" || "@here")) return message.delete()
     if (message.attachments.size > 0) {
         message.attachments.forEach(attachment => {
             const ImageLink = attachment.proxyURL;
@@ -83,17 +70,20 @@ client.on("messageCreate", (message) => {
       });
     }
   }
+  
 
-  if (message.channel.id == sTrans) {
+  if (message.channel.id == Channel1) {
 
-    let tokenW = goblinToken;
-    let idW = "982310906941812758";
-    const webhookClient = new WebhookClient({ id: idW, token: tokenW });
+    const web2Data = fs.readFileSync('./Web2URL.txt',
+    {encoding:'utf8', flag:'r'});
+
+    if (web2Data == '') return message.channel.send('Web2URL is empty')
+
+    const webhookClient = new WebhookClient({ url: web2Data });
 
     if (message.author.bot) return;
     if (message.webhookId) return;
-    if (message.content.includes("@everyone" || "@here"))
-    return spiderManMessagesDelete.push(message);
+    if (message.content.includes("@everyone" || "@here")) return message.delete()
     if (message.attachments.size > 0) {
         message.attachments.forEach(attachment => {
             const ImageLink = attachment.proxyURL;
@@ -130,8 +120,67 @@ client.on("messageCreate", (message) => {
       });
     }
   }
+  }
 
 
+  if (message.author.bot) return;
+  if (message.webhookId) return;
+  if (message.content.match('~createWeb1')) {
+    if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return
+    
+    message.channel.createWebhook("Webhook1")
+    .then(wb => {
+
+      fs.writeFile('./Web1URL.txt', wb.url, err => {
+        if (err) {
+          console.error(err);
+        }
+      });
+      
+    })
+    .catch(console.error);
+
+  } else if (message.content.match('~createWeb2')) {
+    if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return
+
+    message.channel.createWebhook("Webhook2")
+    .then(wb => {
+
+      fs.writeFile('./Web2URL.txt', wb.url, err => {
+        if (err) {
+          console.error(err);
+        }
+      });
+    
+    })
+    .catch(console.error);
+  }
+
+  if (message.content.match('~Channel1')) {
+    if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return
+
+      Channel1 = message.channel.id
+      console.log(Channel1)
+
+    
+    } else if (message.content.match('~Channel2')) {
+      if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return
+
+        Channel2 = message.channel.id
+        console.log(Channel2)
+
+    } else if (message.content.match('~Disable')) {
+      if (message.author.id !== '346939348530495489') return
+        Enabled = false
+    } else if (message.content.match('~Enable')) {
+      if (message.author.id !== '346939348530495489') return
+
+        Enabled = true
+    }
+    else if (message.content.match('~RESET')) {
+      if (message.author.id !== '346939348530495489') return
+      client.destroy()
+    }
 
 });
 
