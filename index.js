@@ -1,10 +1,12 @@
-const { Client, Intents, WebhookClient, Permissions } = require("discord.js");
+const { Client, Intents, WebhookClient, Permissions, MessageEmbed  } = require("discord.js");
 const { token } = require("./config.json");
 const fs = require('fs');
 
-var Channel1 = "979009790695047171"
-var Channel2 = "979009748055785545"
-var Enabled = false
+var Channel1 = ""
+var Guild1 = ""
+var Channel2 = ""
+var Guild2 = ""
+var Enabled = true
 
 const client = new Client({
   intents: [
@@ -17,7 +19,9 @@ const client = new Client({
 
 client.once("ready", () => {
     console.log("Ready!");
-});
+
+    client.user.setActivity('~Help');
+  });
 
 
 client.on("messageCreate", (message) => {
@@ -122,13 +126,16 @@ client.on("messageCreate", (message) => {
   }
   }
 
-
   if (message.author.bot) return;
   if (message.webhookId) return;
-  if (message.content.match('~createWeb1')) {
+  if (message.content.match('~Channel1')) {
     if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return
-    
-    message.channel.createWebhook("Webhook1")
+
+      Channel1 = message.channel.id
+      Guild1 = message.guild.id
+      console.log(Channel1)
+
+      message.channel.createWebhook("Webhook1")
     .then(wb => {
 
       fs.writeFile('./Web1URL.txt', wb.url, err => {
@@ -139,49 +146,66 @@ client.on("messageCreate", (message) => {
       
     })
     .catch(console.error);
+    message.channel.send('setup Channel1') 
 
-  } else if (message.content.match('~createWeb2')) {
-    if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return
-
-    message.channel.createWebhook("Webhook2")
-    .then(wb => {
-
-      fs.writeFile('./Web2URL.txt', wb.url, err => {
-        if (err) {
-          console.error(err);
-        }
-      });
-    
-    })
-    .catch(console.error);
-  }
-
-  if (message.content.match('~Channel1')) {
-    if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return
-
-      Channel1 = message.channel.id
-      console.log(Channel1)
-
-    
     } else if (message.content.match('~Channel2')) {
       if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return
 
         Channel2 = message.channel.id
+        Guild2 = message.guild.id
         console.log(Channel2)
 
+        message.channel.createWebhook("Webhook2")
+        .then(wb => {
+    
+          fs.writeFile('./Web2URL.txt', wb.url, err => {
+            if (err) {
+              console.error(err);
+            }
+          });
+        
+        })
+        .catch(console.error);
+        message.channel.send('setup Channel2')
+
     } else if (message.content.match('~Disable')) {
-      if (message.author.id !== '346939348530495489') return
+      if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return
+
+      client.guilds.cache.get(Guild1).channels.cache.get(Channel1).send("bridge disabled");
+      client.guilds.cache.get(Guild2).channels.cache.get(Channel2).send("bridge disabled");
         Enabled = false
+
     } else if (message.content.match('~Enable')) {
-      if (message.author.id !== '346939348530495489') return
+      if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return
 
+      client.guilds.cache.get(Guild1).channels.cache.get(Channel1).send("bridge enabled");
+      client.guilds.cache.get(Guild2).channels.cache.get(Channel2).send("bridge enabled");
         Enabled = true
-    }
-    else if (message.content.match('~RESET')) {
-      if (message.author.id !== '346939348530495489') return
-      client.destroy()
-    }
 
+    } else if (message.content.match('~delChannel1')) {
+
+      const web1Data = fs.readFileSync('./Web1URL.txt',
+      {encoding:'utf8', flag:'r'});
+      const webhookClient = new WebhookClient({ url: web1Data });
+
+      webhookClient.delete()
+      message.channel.send('removed Channel1')
+
+    } else if (message.content.match('~delChannel2')) {
+
+      const web2Data = fs.readFileSync('./Web2URL.txt',
+      {encoding:'utf8', flag:'r'});
+      const webhookClient = new WebhookClient({ url: web2Data });
+
+      webhookClient.delete()
+      message.channel.send('removed Channel2')
+
+    } else if (message.content.match('~RESET')) {
+    if (message.author.id !== '346939348530495489') return
+    client.destroy()
+
+
+    }
 });
 
 client.login(token);
