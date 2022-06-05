@@ -2,11 +2,8 @@ const { Client, Intents, WebhookClient, Permissions, MessageEmbed  } = require("
 const { token } = require("./config.json");
 const fs = require('fs');
 
-var Channel1 = ""
-var Guild1 = ""
-var Channel2 = ""
-var Guild2 = ""
 var Enabled = true
+
 
 const client = new Client({
   intents: [
@@ -28,9 +25,12 @@ client.once("ready", () => {
 client.on("messageCreate", (message) => {
 
   if (Enabled == true) {
-  if (message.channel.id == Channel2) {
-    const web1Data = fs.readFileSync('./Web1URL.txt',
-    {encoding:'utf8', flag:'r'});
+
+    const Channel2Data = fs.readFileSync('./Channel2.txt', {encoding:'utf8', flag:'r'});
+
+  if (message.channel.id == Channel2Data) {
+
+    const web1Data = fs.readFileSync('./Web1URL.txt', {encoding:'utf8', flag:'r'});
 
     if (web1Data == '') return message.channel.send('Web1URL is empty')
 
@@ -76,8 +76,9 @@ client.on("messageCreate", (message) => {
     }
   }
   
-
-  if (message.channel.id == Channel1) {
+  const Channel1Data = fs.readFileSync('./Channel1.txt',
+  {encoding:'utf8', flag:'r'});
+  if (message.channel.id == Channel1Data) {
 
     const web2Data = fs.readFileSync('./Web2URL.txt',
     {encoding:'utf8', flag:'r'});
@@ -132,9 +133,6 @@ client.on("messageCreate", (message) => {
   if (message.content.match('~Channel1')) {
     if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return
 
-      Channel1 = message.channel.id
-      Guild1 = message.guild.id
-
       message.channel.createWebhook("Webhook1")
     .then(wb => {
 
@@ -143,7 +141,13 @@ client.on("messageCreate", (message) => {
           console.error(err);
         }
       });
-      
+
+      fs.writeFile('./Channel1.txt', message.channel.id, err => {
+        if (err) {
+          console.error(err);
+        }
+      });
+
     })
     .catch(console.error);
     console.log(`setup channel ${message.channel.id} (Channel1)`)
@@ -152,13 +156,17 @@ client.on("messageCreate", (message) => {
     } else if (message.content.match('~Channel2')) {
       if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return
 
-        Channel2 = message.channel.id
-        Guild2 = message.guild.id
-
+  
         message.channel.createWebhook("Webhook2")
         .then(wb => {
     
           fs.writeFile('./Web2URL.txt', wb.url, err => {
+            if (err) {
+              console.error(err);
+            }
+          });
+
+          fs.writeFile('./Channel2.txt', message.channel.id, err => {
             if (err) {
               console.error(err);
             }
@@ -172,15 +180,15 @@ client.on("messageCreate", (message) => {
     } else if (message.content.match('~Disable')) {
       if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return
 
-      client.guilds.cache.get(Guild1).channels.cache.get(Channel1).send("bridge disabled");
-      client.guilds.cache.get(Guild2).channels.cache.get(Channel2).send("bridge disabled");
+        message.channel.send('bridge has been disabled')
+    
         Enabled = false
 
     } else if (message.content.match('~Enable')) {
       if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return
 
-      client.guilds.cache.get(Guild1).channels.cache.get(Channel1).send("bridge enabled");
-      client.guilds.cache.get(Guild2).channels.cache.get(Channel2).send("bridge enabled");
+      message.channel.send('bridge has been enabled')
+
         Enabled = true
 
     } else if (message.content.match('~delChannel1')) {
